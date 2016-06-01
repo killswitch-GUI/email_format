@@ -9,4 +9,7 @@ setup(name='email_format',
       author_email='lolyearight@cybersyndicates.com',
       license='GNU 3.0',
       packages=['email_format'],
+      install_requires=[
+          'requests',
+      ],
       zip_safe=False)
