@@ -25,36 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 # POSSIBILITY OF SUCH DAMAGE.
 
-<<<<<<< HEAD
-=======
-# File: email_format.pt
-# Author: Alexander Rymdeko-Harvey(@Killswitch-GUI)
-# License: BSD 3-Clause
-# Copyright (c) 2016, Alexander Rymdeko-Harvey 
-# All rights reserved. 
-# Redistribution and use in source and binary forms, with or without 
-# modification, are permitted provided that the following conditions are met: 
-#  * Redistributions of source code must retain the above copyright notice, 
-#    this list of conditions and the following disclaimer. 
-#  * Redistributions in binary form must reproduce the above copyright 
-#    notice, this list of conditions and the following disclaimer in the 
-#    documentation and/or other materials provided with the distribution. 
-#  * Neither the name of  nor the names of its contributors may be used to 
-#    endorse or promote products derived from this software without specific 
-#    prior written permission. 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-# POSSIBILITY OF SUCH DAMAGE.
-
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
 import requests
 
 
@@ -69,12 +39,9 @@ class email_format(object):
 
 
 
-<<<<<<< HEAD
 class emailhunter_exception(Exception):
     pass
 
-=======
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
 class email_hunter(object):
   '''
   A class to query emailhunter free and paid API.
@@ -90,7 +57,6 @@ class email_hunter(object):
   EMAILHUNTER_URL_FORMAT = '&format=json'
   EMAILHUNTER_API_KEY = '&api_key='
 
-<<<<<<< HEAD
 
   STATUS_CODE_MSG = { 200 : "The request was successful.", 401 : "No valid API key provided.", 500 : "Something went wrong on Email Hunter's end."}
   STATUS_CODE_OK = 200
@@ -99,8 +65,6 @@ class email_hunter(object):
   STATUS_CODE_SER_STP = 599
 
 
-=======
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
   def __init__(self, api_key='', timeout=5, retrytime=3, useragent='', verbose=False):
 
     self.apikey = str(api_key)
@@ -123,7 +87,6 @@ class email_hunter(object):
         url = self.EMAILHUNTER_API_BASE_URL + str(domain) + EMAILHUNTER_API_KEY + self.apikey + self.EMAILHUNTER_URL_FORMAT
     except:
 
-<<<<<<< HEAD
     ru = request_url(useragent=self.useragent, timeout=self.timeout, retrytime=self.retrytime, raw=True, statuscode=True)
     r, status = ru.request_url(url)
     try:
@@ -159,11 +122,6 @@ class email_hunter(object):
 
 class request_url_exception(Exception):
     pass
-=======
-    try:
-      r = requests.get(url)
-
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
 
 class request_url(object):
   '''
@@ -181,11 +139,7 @@ class request_url(object):
       self.raw = bool(raw)
       verbose = bool(verbose)
 
-<<<<<<< HEAD
   def request_url(self, url, useragent=self.useragent, timeout=self.timeout, retrytime=self.timeout, statuscode=self.statuscode, raw=self.raw, verbose=self.verbose):
-=======
-  def request_url(self, url, useragent, timeout=5, retrytime=3, statuscode=False, raw=False, verbose=False):
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
     """
     A very simple request function
     This is setup to handle the following parms:
@@ -239,8 +193,4 @@ class request_url(object):
         # return raw request object
         return r
     else:
-<<<<<<< HEAD
         return rawhtml
-=======
-        return rawhtml
->>>>>>> 0196b6f560ff5f459a544526715461609e19fd0e
