@@ -35,7 +35,7 @@ class email_format(object):
   '''
 
   def __init__(self, verbose=False):
-
+    pass
 
 
 
@@ -67,7 +67,7 @@ class email_hunter(object):
 
   def __init__(self, api_key='', timeout=5, retrytime=3, useragent='', verbose=False):
 
-    self.apikey = str(api_key)
+    self.api_key = str(api_key)
     self.useragent = str(useragent)
     self.timeout = int(timeout)
     self.retrytime = int(retrytime)
@@ -78,31 +78,33 @@ class email_hunter(object):
     A function to use EmailHunter to use their
     SON API to detect the email format.
     '''
-    try;
+    try:
       if not self.api_key:
         # build the trial url for email hunter
         url = self.EMAILHUNTER_TRIAL_BASE_URL + str(domain) + self.EMAILHUNTER_URL_FORMAT
       else:
         # build the API url for email hunter
         url = self.EMAILHUNTER_API_BASE_URL + str(domain) + EMAILHUNTER_API_KEY + self.apikey + self.EMAILHUNTER_URL_FORMAT
-    except:
-
-    ru = request_url(useragent=self.useragent, timeout=self.timeout, retrytime=self.retrytime, raw=True, statuscode=True)
+    except ValueError as ve:
+      raise emailhunter_exception("Error building url: %s" % (ve))
+    ru = request_url(useragent=self.useragent, timeout=self.timeout, retrytime=self.retrytime, statuscode=True)
     r, status = ru.request_url(url)
-    try:
-      json_results = r.json()
+    self.emailhunter_status_code(status)
+    json_results = r.json()
+    return self.domain_search_json(json_results)
+
 
   def emailhunter_status_code(self, status):
     '''
     Takes in a status code from
     the request to parse.
     '''
-    if status == STATUS_CODE_OK:
+    if status == self.STATUS_CODE_OK:
       return 
-    if status == STATUS_CODE_UNAUTH:
-      raise emailhunter_exception("Error making reauest EmailHunter: %s" % (STATUS_CODE_MSG[STATUS_CODE_UNAUTH]))
-    if status >= STATUS_CODE_SER_SRT && status <= STATUS_CODE_SER_STP:
-      raise emailhunter_exception("Error making reauest EmailHunter: %s" % (STATUS_CODE_MSG[STATUS_CODE_SER_SRT]))
+    if status == self.STATUS_CODE_UNAUTH:
+      raise emailhunter_exception("Error making reauest EmailHunter: %s" % (self.STATUS_CODE_MSG[self.STATUS_CODE_UNAUTH]))
+    if status >= self.STATUS_CODE_SER_SRT and status <= STATUS_CODE_SER_STP:
+      raise emailhunter_exception("Error making reauest EmailHunter: %s" % (self.STATUS_CODE_MSG[self.STATUS_CODE_SER_SRT]))
     else:
       raise emailhunter_exception("[ERROR] Unknown EmailHunter request status code: %s" % (status))
 
@@ -111,14 +113,16 @@ class email_hunter(object):
     Takes in JSON formated from EmailHunter.
     json = json object from requets
     '''
+    patternDict = {}
     if json['status'] == "success":
-
-    elif results['status'] == "success":
-
-    elif results['status'] == "success":
-
-    elif results['status'] == "success":
-
+      if json['pattern']:
+        pattern = json['pattern']
+        if pattern:
+            patternDict['pattern'] = True
+            patternDict['email_format'] = str(pattern)
+    else:
+      patternDict['pattern'] = False
+    return patternDict
 
 class request_url_exception(Exception):
     pass
@@ -130,7 +134,7 @@ class request_url(object):
   are used offten.
   '''
 
-  def __init__(self, useragent='', timeout=5, retrytime=3, statuscode=False, raw=False, verbose=False):
+  def __init__(self, useragent='', timeout=5, retrytime=3, statuscode=False, raw=False, verbose=True):
 
       self.useragent = str(useragent)
       self.timeout = int(timeout)
@@ -139,7 +143,7 @@ class request_url(object):
       self.raw = bool(raw)
       verbose = bool(verbose)
 
-  def request_url(self, url, useragent=self.useragent, timeout=self.timeout, retrytime=self.timeout, statuscode=self.statuscode, raw=self.raw, verbose=self.verbose):
+  def request_url(self, url):
     """
     A very simple request function
     This is setup to handle the following parms:
@@ -152,44 +156,33 @@ class request_url(object):
     a timeout and warn the user.
     """
     rawhtml = ""
+    r = requests.get(url, timeout=self.timeout)
     try:
-        r = requests.get(url, headers=self.UserAgent, timeout=timeout)
+        r = requests.get(url, timeout=self.timeout)
         rawhtml = r.content
-        self.logger.debug(
-            'Request completed: code = ' + str(r.status_code) + ' size = ' + str(len(rawhtml)) + ' url = ' + str(url))
     except requests.exceptions.Timeout:
         #  set up for a retry
         if self.verbose:
             p = ' [!] Request for url timed out, retrying: ' + url
-            self.logger.info('Request timed out, retrying: ' + url)
-            print helpers.color(p, firewall=True)
-        r = requests.get(url, headers=self.UserAgent, timeout=retrytime)
+        r = requests.get(url, headers=self.UserAgent, timeout=self.retrytime)
         rawhtml = r.content
     except requests.exceptions.TooManyRedirects:
         # fail and move on, alert user
         if self.verbose:
             p = ' [!] Request for url resulted in bad url: ' + url
-            self.logger.error(
-                'Request for url resulted in bad url: ' + url)
-            print helpers.color(p, warning=True)
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         if self.verbose:
             p = ' [!] Request for url resulted in major error: ' + str(e)
-            self.logger.critical(
-                'Request for url resulted in major error: ' + str(e))
-            print helpers.color(p, warning=True)
     except Exception as e:
         p = ' [!] Request for url resulted in unhandled error: ' + str(e)
-        self.logger.critical(
-            'Request for url resulted in unhandled error: ' + str(e))
     # just return blank data if failed
     # to prevent bails
-    if statuscode:
+    if self.statuscode:
         # return status code and html
         status = r.status_code
-        return rawhtml, status
-    elif raw:
+        return r, status
+    elif self.raw:
         # return raw request object
         return r
     else:
